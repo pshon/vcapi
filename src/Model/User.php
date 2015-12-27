@@ -20,6 +20,8 @@ class User
     public $maxHealth;
 
     public $city;
+    
+    public $avatarId = 0;
 
     public static $instance = false;
 
@@ -81,12 +83,13 @@ class User
         $this->maxHealth = $result->user->User->max_health;
         $this->level = $result->user->UserLevel->level;
         $this->city = new \VCAPI\Model\City($result->user->User->city_id);
+        $this->avatarId = $result->user->User->avatar;
         
         return true;
     }
     
     public function getFullInfo() {
-        $result = \VCAPI\Common\Request::get('/users/short_infos.json');
+        $result = \VCAPI\Common\Request::get('/users/infos.json');
         
         if (empty($result->userId)) {
             return false;
