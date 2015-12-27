@@ -1,8 +1,8 @@
 {
-   "name": "vircities/vc_api",
+   "name": "vircities/vcapi",
    "description": "Nonofficial VirCities API implementation",
    "keywords": ["VirCities"],
-   "homepage": "https://github.com/pshon/vc_api",
+   "homepage": "https://github.com/pshon/vcapi",
    "license": "MIT",
    "version":"1.0.0",
    "authors": [
