@@ -14,6 +14,8 @@ class Request
     public static $userAgent = 'Mozilla/5.0 (Linux; Android 4.4.4; Custom Phone - 4.4.4 - API 19 - 768x1280 Build/KTU84P) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 Safari/537.36';
 
     public static $debug = false;
+    
+    public static $cookieFileName = './cookie.txt';
 
     public static function post($url = '/', $data = array())
     {
@@ -24,8 +26,8 @@ class Request
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_COOKIEJAR, '../cookie');
-        curl_setopt($curl, CURLOPT_COOKIEFILE, '../cookie');
+        curl_setopt($curl, CURLOPT_COOKIEJAR, self::$cookieFileName);
+        curl_setopt($curl, CURLOPT_COOKIEFILE, self::$cookieFileName);
         
         if (self::$proxy) {
             curl_setopt($curl, CURLOPT_PROXY, self::$proxy);
@@ -59,8 +61,8 @@ class Request
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_COOKIEJAR, '../cookie');
-        curl_setopt($curl, CURLOPT_COOKIEFILE, '../cookie');
+        curl_setopt($curl, CURLOPT_COOKIEJAR, self::$cookieFileName);
+        curl_setopt($curl, CURLOPT_COOKIEFILE, self::$cookieFileName);
         
         if (self::$proxy) {
             curl_setopt($curl, CURLOPT_PROXY, self::$proxy);
@@ -87,7 +89,7 @@ class Request
 
     public static function removeCookie()
     {
-        unlink('./cookie.txt');
+        @unlink(self::$cookieFileName);
     }
 
     public static function makeUrl($path)
