@@ -14,7 +14,7 @@ class Error {
             'message' => $message
         );
         
-        if(self::$exitIfError) {
+        if (self::$exitIfError) {
             throw new \ErrorException($message, $code);
         }
     }

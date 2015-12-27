@@ -26,7 +26,7 @@ class Corporation
     {
         $result = \VCAPI\Common\Request::get('/corporations/corporation_stockholders/' . $this->id . '.json', false);
         
-        if (! empty($result->error)) {
+        if (!empty($result->error)) {
             \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
@@ -63,7 +63,7 @@ class Corporation
     {
         $result = \VCAPI\Common\Request::get('/corporation_items/storage/' . $this->id . '.json', false);
         
-        if (! empty($result->error)) {
+        if (!empty($result->error)) {
             \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
@@ -90,12 +90,12 @@ class Corporation
         $this->vd_balance = $result->currentCorporation->vd_balance;
         $this->vg_balance = $result->currentCorporation->vg_balance;
                 
-        if (! empty($result->error)) {
+        if (!empty($result->error)) {
             \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
-        if (! empty($result->companies)) {
+        if (!empty($result->companies)) {
             foreach ($result->companies as $item) {
                 $this->compaies[] = new \VCAPI\Model\Company($item);
             }
@@ -106,7 +106,7 @@ class Corporation
     {
         $result = \VCAPI\Common\Request::post('/corporation_items/move_items_to_company/' . $companyId . '/' . $itemTypeId . '/' . $qty . '.json');
         
-        if (! empty($result->error)) {
+        if (!empty($result->error)) {
             \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             
             return false;
@@ -126,7 +126,7 @@ class Corporation
             )
         ), false);
         
-        if (! empty($result->error)) {
+        if (!empty($result->error)) {
             \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }

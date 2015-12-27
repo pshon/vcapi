@@ -36,7 +36,7 @@ class Job
     {
         $result = \VCAPI\Common\Request::get('/users/user_work.json', false);
         
-        if (! $result->worker) {
+        if (!$result->worker) {
             $this->worker = false;
         } else {
             $this->worker = true;
@@ -56,7 +56,7 @@ class Job
 
     public function resign()
     {
-        if (! $this->worker) {
+        if (!$this->worker) {
             \VCAPI\Common\Error::exception("User not work now");
             return false;
         }
@@ -72,13 +72,13 @@ class Job
 
     public function doWork($energy)
     {
-        if (! $this->worker) {
+        if (!$this->worker) {
             \VCAPI\Common\Error::exception('User not work now');
             return false;
         }
             
         $user = \VCAPI\Model\User::$instance();
-        if (! $user->energy || $user->energy < $energy) {
+        if (!$user->energy || $user->energy < $energy) {
             \VCAPI\Common\Error::exception('No energy');
             return false;
         }
@@ -86,7 +86,7 @@ class Job
         if ($energy === 0) {
             $energy = $user->energy;
         }
-        if (! $energy = intval($energy)) {
+        if (!$energy = intval($energy)) {
             \VCAPI\Common\Error::exception('Energy must be bigger than null');
             return false;
         }
@@ -123,6 +123,9 @@ class Job
         return $statistic;
     }
 
+    /**
+     * @param integer $energy
+     */
     private function splitEnergy($energy)
     {
         $energy = floor($energy / 10) * 10;
@@ -130,7 +133,7 @@ class Job
         
         if ($energy >= 100) {
             $pices = floor($energy / 100);
-            for ($i = 0; $i < $pices; $i ++) {
+            for ($i = 0; $i < $pices; $i++) {
                 $splited[] = 100;
                 $energy -= 100;
             }
@@ -138,7 +141,7 @@ class Job
         
         if ($energy >= 50) {
             $pices = floor($energy / 50);
-            for ($i = 0; $i < $pices; $i ++) {
+            for ($i = 0; $i < $pices; $i++) {
                 $splited[] = 50;
                 $energy -= 50;
             }
@@ -146,7 +149,7 @@ class Job
         
         if ($energy >= 10) {
             $pices = floor($energy / 10);
-            for ($i = 0; $i < $pices; $i ++) {
+            for ($i = 0; $i < $pices; $i++) {
                 $splited[] = 10;
                 $energy -= 10;
             }

@@ -32,7 +32,7 @@ class Worker
             $this->level = $item->profession_level;
             $this->salary = $item->salary;
             
-            if (! empty($item->foreign_worker_type_id)) {
+            if (!empty($item->foreign_worker_type_id)) {
                 $this->isForeign = true;
             } else {
                 $this->userId = $item->user_id;
@@ -57,7 +57,7 @@ class Worker
         
         $result = \VCAPI\Common\Request::post('/company_foreign_workers/add/' . $companyId . '/' . $typeId . '/' . $qty . '.json');
         
-        if (! empty($result->error)) {
+        if (!empty($result->error)) {
             \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
