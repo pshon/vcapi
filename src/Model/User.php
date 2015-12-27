@@ -16,6 +16,8 @@ class User
     public $balance;
 
     public $health;
+    
+    public $maxHealth;
 
     public $city;
 
@@ -76,6 +78,7 @@ class User
         $this->energy = $result->user->User->energy;
         $this->maxEnergy = $result->user->User->max_energy;
         $this->health = $result->user->User->health;
+        $this->maxHealth = $result->user->User->max_health;
         $this->level = $result->user->UserLevel->level;
         $this->city = new \VCAPI\Model\City($result->user->User->city_id);
         
