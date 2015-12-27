@@ -70,7 +70,7 @@ class Job
         ), false);
     }
 
-    public function job($energy)
+    public function doWork($energy)
     {
         if (! $this->worker) {
             \VCAPI\Common\Error::exception('User not work now');
