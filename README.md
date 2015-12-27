@@ -33,7 +33,7 @@ if(!$user->Auth('login', 'password')) {
 *Example 2* - Vacancies and work
 
 ```php
-// If you want to log in, use the previous example
+// If you want to login, use the previous example
 $vacancies = new \VCAPI\Model\Vacancies();
 
 // show all vacancies
@@ -61,8 +61,7 @@ If you need debug mode, add this code on top:
 
 ## API
 
-Below is a list of the public methods in the common classes you will most likely use. For a more formal source
-of class/method documentation, please see the [PHPdoc generated documentation](http://chriso.github.io/klein.php/docs/).
+Below is a list of the public methods in the common classes you will most likely use.
 
 ```php
 User::
