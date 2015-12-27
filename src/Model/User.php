@@ -84,6 +84,16 @@ class User
         
         return true;
     }
+    
+    public function getFullInfo() {
+        $result = \VCAPI\Common\Request::get('/users/short_infos.json');
+        
+        if (empty($result->userId)) {
+            return false;
+        }
+        
+        return $result->user;
+    }
 
     public function UnAuth()
     {
