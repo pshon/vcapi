@@ -1,4 +1,4 @@
-# vc_api
+# VirCities Api
 
 **vc_api** is a non-official [VirCities](http://vircities.com) API implementation for PHP 5.3+
 
