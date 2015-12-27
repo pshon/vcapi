@@ -11,7 +11,7 @@
 ## Composer Installation
 
 1. Get [Composer](http://getcomposer.org/)
-2. Require VC_API with `php composer.phar require vircities/vc_api
+2. Require VCAPI with `php composer.phar require vircities/vc_api:dev-master` (currently not available stable release)
 3. Add the following to your application's main PHP file: `require 'vendor/autoload.php';`
 
 ## Example
