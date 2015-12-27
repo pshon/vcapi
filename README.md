@@ -1,19 +1,19 @@
 # VirCities Api
 
-**vc_api** is a non-official [VirCities](http://vircities.com) API implementation for PHP 5.3+
+**vcapi** is a non-official [VirCities](http://vircities.com) API implementation for PHP 5.3+
 
 [![Build Status](https://scrutinizer-ci.com/g/pshon/vc_api/badges/build.png?b=master)](https://scrutinizer-ci.com/g/pshon/vc_api/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/pshon/vc_api/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/pshon/vc_api/?branch=master)
 
 ## Getting started
 
 1. PHP 5.3.x is required
-2. Install VC_API using [Composer](#composer-installation) (recommended) or manually
+2. Install VCAPI using [Composer](#composer-installation) (recommended) or manually
 3. Install CURL library for php (if not yer installed)
 
 ## Composer Installation
 
 1. Get [Composer](http://getcomposer.org/)
-2. Require VCAPI with `php composer.phar require vircities/vc_api:dev-master` (currently not available stable release)
+2. Require VCAPI with `php composer.phar require vircities/vcapi:dev-master` (currently not available stable release)
 3. Add the following to your application's main PHP file: `require 'vendor/autoload.php';`
 
 ## Example
