@@ -21,9 +21,14 @@ class User
 
     public static $instance = false;
 
-    public function __construct()
+    public function __construct($clearSession = false)
     {
         self::$instance = $this;
+        
+        if($clearSession) {
+            $this->UnAuth();
+        }
+        
         $this->getShortInfo();
     }
 
