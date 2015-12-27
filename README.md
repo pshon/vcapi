@@ -2,6 +2,8 @@
 
 **vc_api** is a non-official [VirCities](http://vircities.com) API implementation for PHP 5.3+
 
+[![Build Status](https://scrutinizer-ci.com/g/pshon/vc_api/badges/build.png?b=master)](https://scrutinizer-ci.com/g/pshon/vc_api/build-status/master) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/pshon/vc_api/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/pshon/vc_api/?branch=master)
+
 ## Getting started
 
 1. PHP 5.3.x is required
