@@ -4,6 +4,7 @@
    "keywords": ["VirCities"],
    "homepage": "https://github.com/pshon/vc_api",
    "license": "MIT",
+   "version":"1.0.0",
    "authors": [
       {
          "name": "Alexey Pshenichniy",
