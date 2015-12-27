@@ -51,14 +51,14 @@ class Worker
         $typeId = $this->getTypeIdByLevel($level);
         $qty = intval($qty);
         if ($typeId) {
-            throw new \ErrorException('Bad worker level.');
+            \VCAPI\Common\Error::exception('Bad worker level.');
             return false;
         }
         
         $result = \VCAPI\Common\Request::post('/company_foreign_workers/add/' . $companyId . '/' . $typeId . '/' . $qty . '.json');
         
         if (! empty($result->error)) {
-            throw new \ErrorException($result->setFlash[0]->msg);
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
         

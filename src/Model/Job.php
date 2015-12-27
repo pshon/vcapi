@@ -57,7 +57,7 @@ class Job
     public function resign()
     {
         if (! $this->worker) {
-            throw new \ErrorException("User not work now");
+            \VCAPI\Common\Error::exception("User not work now");
             return false;
         }
         
@@ -72,16 +72,25 @@ class Job
 
     public function job($energy)
     {
-        if (! $this->worker)
-            throw new \ErrorException('User not work now');
+        if (! $this->worker) {
+            \VCAPI\Common\Error::exception('User not work now');
+            return false;
+        }
+            
         $user = \VCAPI\Model\User::$instance();
-        if (! $user->energy || $user->energy < $energy)
-            throw new \ErrorException('No energy');
+        if (! $user->energy || $user->energy < $energy) {
+            \VCAPI\Common\Error::exception('No energy');
+            return false;
+        }
+            
         if ($energy === 0) {
             $energy = $user->energy;
         }
-        if (! $energy = intval($energy))
-            throw new \ErrorException('Energy must be bigger than null');
+        if (! $energy = intval($energy)) {
+            \VCAPI\Common\Error::exception('Energy must be bigger than null');
+            return false;
+        }
+            
         
         $energy = $this->splitEnergy($energy);
         $statistic = array(

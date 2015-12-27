@@ -108,7 +108,7 @@ class Company
         $result = \VCAPI\Common\Request::get('/companies/info/' . $this->id . '.json', false);
         
         if (! empty($result->error)) {
-            throw new \ErrorException($result->setFlash[0]->msg);
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
@@ -124,7 +124,7 @@ class Company
         $result = \VCAPI\Common\Request::get('/company_items/storage/' . $this->id . '.json', false);
         
         if (! empty($result->error)) {
-            throw new \ErrorException($result->setFlash[0]->msg);
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
@@ -147,7 +147,7 @@ class Company
         $result = \VCAPI\Common\Request::post('/company_items/move_items_to_corporation/' . $this->id . '/' . $itemId . '/' . $qty . '.json');
         
         if (! empty($result->error)) {
-            throw new \ErrorException($result->setFlash[0]->msg);
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
@@ -159,7 +159,7 @@ class Company
         $result = \VCAPI\Common\Request::get('/company_workers/list_workers/' . $this->id . '.json', false);
         
         if (! empty($result->error)) {
-            throw new \ErrorException($result->setFlash[0]->msg);
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
@@ -204,7 +204,7 @@ class Company
         $result = \VCAPI\Common\Request::post('/company_foreign_workers/delete/' . $this->id . '/' . $workerId . '/1.json');
         
         if (! empty($result->error)) {
-            throw new \ErrorException($result->setFlash[0]->msg);
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
@@ -216,7 +216,7 @@ class Company
         $result = \VCAPI\Common\Request::post('/company_workers/delete_worker/' . $workerId . '/1.json');
         
         if (! empty($result->error)) {
-            throw new \ErrorException($result->setFlash[0]->msg);
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
@@ -246,7 +246,7 @@ class Company
         }
         
         if (! empty($result->error)) {
-            throw new \ErrorException($result->setFlash[0]->msg);
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
@@ -276,7 +276,7 @@ class Company
         }
         
         if (! empty($result->error)) {
-            throw new \ErrorException($result->setFlash[0]->msg);
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
@@ -299,7 +299,7 @@ class Company
         $result = \VCAPI\Common\Request::post('/vacancies/save_vacancy.json', $query, false);
         
         if (! empty($result->error)) {
-            throw new \ErrorException($result->setFlash[0]->msg);
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
             return false;
         }
         

@@ -40,7 +40,8 @@ class Vacancy
         $user = new \VCAPI\Model\User();
         
         if ($user->level < $this->level) {
-            throw new \ErrorException('User professional level is low, be need ' . $this->level . ' level or higher');
+            \VCAPI\Common\Error::exception('User professional level is low, be need ' . $this->level . ' level or higher');
+            return false;
         }
         
         $result = \VCAPI\Common\Request::post('/vacancies/work_vacancy.json', array(

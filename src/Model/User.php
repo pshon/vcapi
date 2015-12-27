@@ -38,6 +38,7 @@ class User
 
     public function Auth($login, $pass)
     {
+        $this->UnAuth();
         $result = \VCAPI\Common\Request::post('/users/app_auth.json', array(
             'data' => array(
                 'User' => array(
@@ -50,7 +51,7 @@ class User
         $this->getShortInfo();
         
         if (empty($this->userId)) {
-            throw new \ErrorException('Authorize fail!');
+            \VCAPI\Common\Error::exception('Authorization error');
             return false;
         }
         
@@ -60,9 +61,7 @@ class User
     public function getShortInfo()
     {
         $result = \VCAPI\Common\Request::get('/users/short_infos.json');
-        
-        var_dump($result);
-        
+                
         if (empty($result->userId)) {
             return false;
         }
