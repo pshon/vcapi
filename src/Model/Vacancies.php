@@ -17,15 +17,17 @@ class Vacancies
 
     public function getCompanyName($companyId)
     {
-        return (! empty($this->companies->{$companyId})) ? $this->companies->{$companyId} : false;
+        return (!empty($this->companies->{$companyId})) ? $this->companies->{$companyId} : false;
     }
 
     public function getListByProfId($professionId)
     {
-        if (empty($this->vacancies))
-            return false;
-        if (empty($this->indexes['by-prof']) || empty($this->indexes['by-prof'][$professionId]))
-            return false;
+        if (empty($this->vacancies)) {
+                    return false;
+        }
+        if (empty($this->indexes['by-prof']) || empty($this->indexes['by-prof'][$professionId])) {
+                    return false;
+        }
         
         $list = array();
         
@@ -38,10 +40,12 @@ class Vacancies
 
     public function getListByCompanyId($companyId)
     {
-        if (empty($this->vacancies))
-            return false;
-        if (empty($this->indexes['by-company']) || empty($this->indexes['by-company'][$companyId]))
-            return false;
+        if (empty($this->vacancies)) {
+                    return false;
+        }
+        if (empty($this->indexes['by-company']) || empty($this->indexes['by-company'][$companyId])) {
+                    return false;
+        }
         
         $list = array();
         
@@ -54,10 +58,12 @@ class Vacancies
 
     public function getListByCorpId($corporationId)
     {
-        if (empty($this->vacancies))
-            return false;
-        if (empty($this->indexes['by-corp']) || empty($this->indexes['by-corp'][$corporationId]))
-            return false;
+        if (empty($this->vacancies)) {
+                    return false;
+        }
+        if (empty($this->indexes['by-corp']) || empty($this->indexes['by-corp'][$corporationId])) {
+                    return false;
+        }
         
         $list = array();
         
@@ -89,8 +95,9 @@ class Vacancies
             'by-corp' => array()
         );
         
-        if (empty($this->vacancies))
-            return;
+        if (empty($this->vacancies)) {
+                    return;
+        }
         
         foreach ($this->vacancies as $index => $vacancy) {
             if (empty($this->indexes['by-prof'][$vacancy->CompanyVacancy->profession_type_id])) {

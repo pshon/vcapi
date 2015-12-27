@@ -17,7 +17,7 @@ class City
     public function __construct($cityId)
     {
         $this->id = $cityId;
-        if (! empty($this->list[$cityId])) {
+        if (!empty($this->list[$cityId])) {
             $this->name = $this->list[$this->id];
         }
     }

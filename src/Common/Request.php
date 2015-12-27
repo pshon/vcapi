@@ -92,6 +92,9 @@ class Request
         @unlink(self::$cookieFileName);
     }
 
+    /**
+     * @param string $path
+     */
     public static function makeUrl($path)
     {
         if (strpos($path, '?') === false) {

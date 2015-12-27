@@ -29,7 +29,7 @@ class User
     {
         self::$instance = $this;
         
-        if($clearSession) {
+        if ($clearSession) {
             $this->UnAuth();
         }
         
