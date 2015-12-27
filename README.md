@@ -23,10 +23,10 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 $user = new \VCAPI\Model\User();
-if(!$user->Auth('game_user_login', 'game_user_password')) {
+if(!$user->Auth('login', 'password')) {
   echo "Not logged";
 } else {
-  echo 'My game balance: ' . $user->balance . ' vd';
+  echo 'My balance: ' . $user->balance . ' vd';
 }
 ```
 
