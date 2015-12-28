@@ -8,17 +8,45 @@ class Company
 
     public $name;
 
+    public $company_type_id;
+
+    public $city;
+
+    public $type;
+
+    public $master_type;
+
+    public $corporation_master;
+
+    public $company_level;
+
+    public $products_sold;
+
+    public $take_funds;
+
+    public $produced_items;
+
+    public $company_income;
+
+    public $storage_level;
+
+    public $production_status;
+
+    public $production_status_title;
+
+    public $currently_producing;
+
     public $productionId;
 
     public $private;
 
-    public $managerId;
+    public $manager_id;
 
     public $vd_balance;
 
     public $vg_balance;
 
-    public $production;
+    public $current_production;
 
     public $productionName;
 
@@ -37,12 +65,15 @@ class Company
     public function __construct($item = false)
     {
         if ($item !== false && $item instanceof \stdClass) {
-            $this->id = $item->id;
-            $this->name = $item->name;
-            $this->managerId = $item->manager_id;
-            $this->productionName = $item->current_production->name;
-            $this->productionStatus = $item->current_production->currently_producing;
-            $this->production = $item->current_production;
+            foreach (get_object_vars($item) as $name => $value) {
+                if (property_exists($this, $name)) {
+                    $this->{$name} = $value;
+                }
+            }
+
+            if (property_exists($item, 'city_id')) {
+                $this->city = new \VCAPI\Model\City($item->city_id);
+            }
         }
     }
 
@@ -64,7 +95,7 @@ class Company
     public function setProductionId($productionId)
     {
         if ($this->productionId == $productionId) {
-                    return false;
+            return false;
         }
         
         $result = \VCAPI\Common\Request::post('/companies/set_production.json', array(
