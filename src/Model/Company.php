@@ -11,7 +11,7 @@ class Company
     /** @var \VCAPI\Model\CompanyType CompanyType */
     public $company_type;
 
-    /** @var \VCAPI\Model\City City */
+    /** @var string Name of city */
     public $city;
 
     public $type;
@@ -80,7 +80,7 @@ class Company
         }
 
         if (property_exists($item, 'city_id')) {
-            $this->city = new \VCAPI\Model\City($item->city_id);
+            $this->city = \VCAPI\Model\City::getNameById($item->city_id);
         }
 
         if (property_exists($item, 'current_production')) {
