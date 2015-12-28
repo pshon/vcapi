@@ -12,7 +12,7 @@ class Corporation
 
     public $vg_balance;
 
-    public $compaies;
+    public $companies;
 
     public function __construct($id = false)
     {
@@ -97,7 +97,7 @@ class Corporation
         
         if (!empty($result->companies)) {
             foreach ($result->companies as $item) {
-                $this->compaies[] = new \VCAPI\Model\Company($item);
+                $this->companies[] = new \VCAPI\Model\Company($item);
             }
         }
     }

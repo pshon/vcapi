@@ -75,7 +75,7 @@ User::
     $userId                             // Current user id
     $level                              // User exp level
     $energy                             // Current user energy
-    $maEnergy                           // Max user energy
+    $maxEnergy                          // Max user energy
     $balance                            // Current user balance in VD
     $health                             // Current user health
     $maxHealth                          // Max user health
