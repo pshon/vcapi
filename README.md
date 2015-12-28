@@ -70,7 +70,8 @@ User::
     Auth($login, $password)             // Authorization
     getShortInfo()                      // Assign user info on current instance
     getFullInfo()                       // Return extended user information
-    UnAuth()                            // Detatch user session
+    getCompanies()                      // Return all companies that belong to user
+    UnAuth()                            // Detach user session
         
     $userId                             // Current user id
     $level                              // User exp level

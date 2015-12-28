@@ -98,6 +98,27 @@ class User
         return $result->user;
     }
 
+    /**
+     * Get all companies that belong to user
+     *
+     * @return array|bool
+     */
+    public function getCompanies() {
+        $result = \VCAPI\Common\Request::get('/companies/user_companies.json');
+
+        if (empty($result->userId)) {
+            return false;
+        }
+
+        $companies = [];
+
+        foreach ($result->companies as $company) {
+            $companies[] = new \VCAPI\Model\Company($company->Company);
+        }
+
+        return $companies;
+    }
+
     public function UnAuth()
     {
         \VCAPI\Common\Request::removeCookie();
