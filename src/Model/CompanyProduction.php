@@ -19,13 +19,33 @@ class CompanyProduction
 
     public $name;
 
+    public $img;
+
+    public $quantity;
+
+    public $currently_producing;
+
+    /**
+     * @var array[title, needs, have, needs_for_start]
+     */
+    public $resources = [];
+
     /**
      * CompanyProduction constructor.
-     * @param $id
+     * @param $item
+     * @internal param $id
      */
-    public function __construct($id)
+    public function __construct($item)
     {
-        $this->name = self::getNameById($id);
+        if (is_numeric($item)) {
+            $this->name = self::getNameById($item);
+        } elseif (is_object($item)) {
+            foreach (get_object_vars($item) as $name => $value) {
+                if (property_exists($this, $name)) {
+                    $this->{$name} = $value;
+                }
+            }
+        }
     }
 
     /**

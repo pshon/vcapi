@@ -43,6 +43,8 @@ class Company
 
     public $manager_id;
 
+    public $user_id;
+
     public $vd_balance;
 
     public $vg_balance;
@@ -210,7 +212,7 @@ class Company
             \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
         }
 
-        $this->workplaces = $result->currentCompany->company_level * 5;
+        $this->workplaces = $result->currentCompany->Company->company_level * 5;
         $this->workersAllCnt = count($result->currentCompany->CompanyWorker) + count($result->currentCompany->UserForeignWorker);
         $this->workersForeignCnt = count($result->currentCompany->UserForeignWorker);
         $this->workers = array();
