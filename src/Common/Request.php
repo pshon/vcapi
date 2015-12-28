@@ -16,9 +16,15 @@ class Request
     public static $debug = false;
     
     public static $cookieFileName = './cookie.txt';
+    
+    public static $initiated = false;
 
     public static function post($url = '/', $data = array())
     {
+        if(!self::$initiated) {
+            self::checkWritableCookiePath();
+        }
+        
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -56,6 +62,10 @@ class Request
 
     public static function get($url = '/')
     {
+        if(!self::$initiated) {
+            self::checkWritableCookiePath();
+        }
+        
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -89,6 +99,9 @@ class Request
 
     public static function removeCookie()
     {
+        if(!self::$initiated) {
+            self::checkWritableCookiePath();
+        }
         @unlink(self::$cookieFileName);
     }
 
@@ -106,5 +119,17 @@ class Request
         }
         
         return self::$domain . $path;
+    }
+    
+    public static function checkWritableCookiePath() {
+        if(!file_exists(self::$cookieFileName)) {
+            if(!@touch(self::$cookieFileName)) {
+                throw new \Exception('Cookie file path is not writable, or do not have permission. Current cookie path: ' . self::$cookieFileName . '. Change: \VCAPI\Common\Request::$cookieFileName = "/cookie/writable/path/";');
+            }
+        } else {
+            if(!is_writable(self::$cookieFileName)) {
+                throw new \Exception('Cookie file is not writable, or do not have permission. Current cookie path: ' . self::$cookieFileName);
+            }
+        }
     }
 }
