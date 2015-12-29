@@ -328,7 +328,7 @@ class Company
         return true;
     }
 
-    public function saveVacantion()
+    public function saveVacancy()
     {
         $query = array(
             'data' => array(
@@ -350,7 +350,7 @@ class Company
         return true;
     }
 
-    public function reopenVacantion()
+    public function reopenVacancy()
     {
         $this->vacancy->is_hiring = 1;
         $this->saveVacantion();
