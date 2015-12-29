@@ -70,7 +70,8 @@ class Company
     public function __construct($item)
     {
         if (!($item instanceof \stdClass)) {
-            throw new \ErrorException('Incoming data not found');
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            return false;
         }
 
         foreach (get_object_vars($item) as $name => $value) {
