@@ -70,7 +70,7 @@ class Company
     public function __construct($item)
     {
         if (!($item instanceof \stdClass)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            \VCAPI\Common\Error::exception('Incoming data not found');
             return false;
         }
 
