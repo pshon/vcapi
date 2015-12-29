@@ -53,6 +53,17 @@ $job = new \VCAPI\Model\Job();
 $job->doWork(100);
 ```
 
+*Example 3* - Companies
+
+```php
+// Get all companies that belong to user
+$user = new \VCAPI\Model\User();
+print_r($user->getCompanies());
+
+// or load company information by ID
+var_dump(\VCAPI\Model\Company::loadById($companyId))
+```
+
 If you need debug mode, add this code on top:
 
 ```php
@@ -84,7 +95,49 @@ User::
     $avatarId                           // Avatar id
 
 Company::
-    *in process...*
+    loadById()                          // Load company information by id (static method)
+    getProductionList()                 //
+    setProductionId()                   //
+    setManagerId()                      //
+    getStorage()                        //
+    moveItemToCorporation()             //
+    getWorkers()                        //
+    addForeignWorker()                  //
+    deleteWorker()                      //
+    deleteForeignWorker()               //
+    deleteUserWorker()                  //
+    takeMoney()                         //
+    addMoney()                          //
+    saveVacancy()                       //
+    reopenVacancy()                     //
+
+    $id                                 // Company id
+    $name                               // Company name
+    $company_type                       // CompanyType object
+    $city                               // Name of city (string)
+    $type                               //
+    $master_type                        //
+    $corporation_master                 //
+    $company_level                      //
+    $products_sold                      //
+    $take_funds                         //
+    $produced_items                     //
+    $company_income                     //
+    $storage_level                      //
+    $production_status                  //
+    $production_status_title            //
+    $currently_producing                // Is company currently producing smth or not (bool)
+    $private                            //
+    $manager_id                         //
+    $user_id                            //
+    $vd_balance                         //
+    $vg_balance                         //
+    $current_production                 // CompanyProduction object
+    $workersAllCnt                      //
+    $workersForeignCnt                  //
+    $workplaces                         //
+    $workers                            //
+    $vacancy                            //
 
 Corporation::
     *in process...*

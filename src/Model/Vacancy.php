@@ -14,7 +14,7 @@ class Vacancy
 
     public $professionId;
 
-    public $profssionName;
+    public $professionName;
 
     public $companyName;
 
@@ -32,7 +32,7 @@ class Vacancy
         $this->salary = $vacancyItem->CompanyVacancy->salary;
         $this->level = $vacancyItem->CompanyVacancy->level;
         $this->professionId = $vacancyItem->ProfessionType->id;
-        $this->profssionName = $vacancyItem->ProfessionType->name;
+        $this->professionName = $vacancyItem->ProfessionType->name;
     }
 
     public function getJob()
