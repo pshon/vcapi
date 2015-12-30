@@ -72,11 +72,11 @@ $user = new \VCAPI\Model\User();
 // return corporations collection
 print_r($user->getCorporations());
 
-// Find corporation with name "My Corporation" and return corporation storage colection
-print_r($user->getCorporations()->find('name', 'My Corporation')->item(0)->getStorage());
+// Find corporation with name "My Corporation"
+$corporation = $user->getCorporations()->find('name', 'My Corporation')->item(0);
 
-// Get first user company and return storage items and sort by quantity
-print_r($user->getCompanies()->item(0)->sort('quantity', 'DESC'));
+// Get corporation storage and sort items by quantity
+print_r($corporation->getStorage()->sort('quantity', 'DESC'));
 
 ```
 
