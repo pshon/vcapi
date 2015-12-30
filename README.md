@@ -64,6 +64,24 @@ print_r($user->getCompanies());
 var_dump(\VCAPI\Model\Company::loadById($companyId))
 ```
 
+*Example 4* - Use collection features
+
+```php
+$user = new \VCAPI\Model\User();
+
+// return corporations collection
+print_r($user->getCorporations());
+
+// Find corporation with name "My Corporation" and return corporation storage colection
+print_r($user->getCorporations()->find('name', 'My Corporation')->item(0)->getStorage());
+
+// Get first user company and return storage items and sort by quantity
+print_r($user->getCompanies()->item(0)->sort('quantity', 'DESC'));
+
+```
+
+
+
 If you need debug mode, add this code on top:
 
 ```php
@@ -81,7 +99,8 @@ User::
     Auth($login, $password)             // Authorization
     getShortInfo()                      // Assign user info on current instance
     getFullInfo()                       // Return extended user information
-    getCompanies()                      // Return all companies that belong to user
+    getCompanies()                      // Return all companies collection that belong to user
+    getCorporations()			// Return all corporations collection which shares belong to user
     UnAuth()                            // Detach user session
         
     $userId                             // Current user id
@@ -158,6 +177,9 @@ Product::
     *in process...*
     
 City::
+    *in process...*
+    
+Product::
     *in process...*
 ```
 

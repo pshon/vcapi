@@ -20,15 +20,15 @@ class Corporations {
     }
     
     public function getAll() {
-        $list = array();
+        $list = new \VCAPI\Common\Collection();
         $items = $this->getShortList();
         
         if(empty($items)) {
-            return false;
+            return $list;
         }
         
         foreach($items as $item) {
-            $list[] = new \VCAPI\Model\Corporation($item->id);
+            $list->add(new \VCAPI\Model\Corporation($item->id));
         }
         
         return $list;

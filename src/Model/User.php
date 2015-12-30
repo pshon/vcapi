@@ -110,13 +110,19 @@ class User
             return false;
         }
 
-        $companies = [];
+        $companies = new \VCAPI\Common\Collection();
 
         foreach ($result->companies as $company) {
-            $companies[] = new \VCAPI\Model\Company($company->Company);
+            $companies->add(new \VCAPI\Model\Company($company->Company));
         }
 
         return $companies;
+    }
+    
+    public function getCorporations() {
+        $model = new \VCAPI\Model\Corporations();
+        
+        return $model->getAll();
     }
 
     public function UnAuth()

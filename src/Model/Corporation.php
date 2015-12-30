@@ -68,20 +68,27 @@ class Corporation
             return false;
         }
         
-        if ($id != false) {
-            $count = 0;
-            foreach ($result->storage as $item) {
-                if ($item->CorporationItem->item_type_id == $id) {
+        $storageCollection = new \VCAPI\Common\Collection();
+        
+        foreach ($result->storage as $item) {
+            if ($id != false ) {
+                if ( $item->CorporationItem->item_type_id == $id) {
                     $count = $item->CorporationItem->quantity;
-                    
+                
                     return $count;
                 }
+            } else {
+                $product = new \VCAPI\Model\Product($item->ItemType);
+                $product->quantity = $item->CorporationItem->quantity;
+                
+                $storageCollection->add($product);
             }
+            
         }
         
-        return $result->storage;
+        return $storageCollection;
     }
-
+    
     public function getInfo()
     {
         $result = \VCAPI\Common\Request::get('/corporations/corporation_office/' . $this->id . '.json');
@@ -133,4 +140,27 @@ class Corporation
         
         return true;
     }
+    
+    public function sellProduction($production, $count, $price, $currency = 'vdollars') {
+        $result = \VCAPI\Common\Request::post('/exchanges/add_corporation_exchange.json', array(
+            'data' => array(
+                'Exchange' => array(
+                    'price' => floatval($price),
+                    'currency' => $currency,
+                    'number' =>$count,
+                    'item_type_id'=> ($production instanceof \VCAPI\Model\Product)? $production->id : $production,
+                    'corporation_id' => $this->id
+                )
+            )
+        ));
+        
+        if (!empty($result->error)) {
+            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    
 }
