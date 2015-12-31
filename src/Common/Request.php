@@ -7,6 +7,7 @@ class Request
     public static $domain = 'https://api3.vircities.com';
 
     public static $proxy = false; // 127.0.0.1:8080
+
     public static $apiVersion = '1.10';
 
     public static $os = 'android';
@@ -15,14 +16,21 @@ class Request
 
     public static $debug = false;
     
-    public static $cookieFileName = './cookie.txt';
+    public static $cookieFileName = './cookie_';
     
     public static $initiated = false;
 
-    public static function post($url = '/', $data = array())
+    /**
+     * @param string $url
+     * @param array $data
+     * @param string $instanceIdentifier
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function post($url = '/', $data = array(), $instanceIdentifier = '')
     {
         if(!self::$initiated) {
-            self::checkWritableCookiePath();
+            self::checkWritableCookiePath($instanceIdentifier);
         }
         
         $curl = curl_init();
@@ -32,8 +40,8 @@ class Request
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_COOKIEJAR, self::$cookieFileName);
-        curl_setopt($curl, CURLOPT_COOKIEFILE, self::$cookieFileName);
+        curl_setopt($curl, CURLOPT_COOKIEJAR, self::$cookieFileName . $instanceIdentifier . '.txt');
+        curl_setopt($curl, CURLOPT_COOKIEFILE, self::$cookieFileName . $instanceIdentifier . '.txt');
         
         if (self::$proxy) {
             curl_setopt($curl, CURLOPT_PROXY, self::$proxy);
@@ -60,10 +68,16 @@ class Request
         return json_decode($result);
     }
 
-    public static function get($url = '/')
+    /**
+     * @param string $url
+     * @param string $instanceIdentifier
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function get($url = '/', $instanceIdentifier = '')
     {
         if(!self::$initiated) {
-            self::checkWritableCookiePath();
+            self::checkWritableCookiePath($instanceIdentifier);
         }
         
         $curl = curl_init();
@@ -71,8 +85,8 @@ class Request
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_COOKIEJAR, self::$cookieFileName);
-        curl_setopt($curl, CURLOPT_COOKIEFILE, self::$cookieFileName);
+        curl_setopt($curl, CURLOPT_COOKIEJAR, self::$cookieFileName . $instanceIdentifier . '.txt');
+        curl_setopt($curl, CURLOPT_COOKIEFILE, self::$cookieFileName . $instanceIdentifier . '.txt');
         
         if (self::$proxy) {
             curl_setopt($curl, CURLOPT_PROXY, self::$proxy);
@@ -97,16 +111,21 @@ class Request
         return json_decode($result);
     }
 
-    public static function removeCookie()
+    /**
+     * @param $instanceIdentifier
+     * @throws \Exception
+     */
+    public static function removeCookie($instanceIdentifier)
     {
         if(!self::$initiated) {
-            self::checkWritableCookiePath();
+            self::checkWritableCookiePath($instanceIdentifier);
         }
-        @unlink(self::$cookieFileName);
+        @unlink(self::$cookieFileName . $instanceIdentifier . '.txt');
     }
 
     /**
-     * @param string $path
+     * @param $path
+     * @return string
      */
     public static function makeUrl($path)
     {
@@ -120,15 +139,19 @@ class Request
         
         return self::$domain . $path;
     }
-    
-    public static function checkWritableCookiePath() {
-        if(!file_exists(self::$cookieFileName)) {
-            if(!@touch(self::$cookieFileName)) {
-                throw new \Exception('Cookie file path is not writable, or do not have permission. Current cookie path: ' . self::$cookieFileName . '. Change: \VCAPI\Common\Request::$cookieFileName = "/cookie/writable/path/";');
+
+    /**
+     * @param string $instanceIdentifier
+     * @throws \Exception
+     */
+    public static function checkWritableCookiePath($instanceIdentifier = '') {
+        if(!file_exists(self::$cookieFileName . $instanceIdentifier . '.txt')) {
+            if(!@touch(self::$cookieFileName . $instanceIdentifier . '.txt')) {
+                throw new \Exception('Cookie file path is not writable, or do not have permission. Current cookie path: ' . self::$cookieFileName . $instanceIdentifier . '.txt' . '. Change: \VCAPI\Common\Request::$cookieFileName = "/cookie/writable/path/";');
             }
         } else {
-            if(!is_writable(self::$cookieFileName)) {
-                throw new \Exception('Cookie file is not writable, or do not have permission. Current cookie path: ' . self::$cookieFileName);
+            if(!is_writable(self::$cookieFileName . $instanceIdentifier . '.txt')) {
+                throw new \Exception('Cookie file is not writable, or do not have permission. Current cookie path: ' . self::$cookieFileName . $instanceIdentifier . '.txt');
             }
         }
     }

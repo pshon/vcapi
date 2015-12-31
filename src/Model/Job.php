@@ -1,8 +1,12 @@
 <?php
 namespace VCAPI\Model;
 
+use VCAPI\Common\Error;
+use VCAPI\Common\Request;
+
 class Job
 {
+    public $instanceIdentifier = '';
 
     private $professions = array(
         1 => "Фермер",
@@ -27,14 +31,20 @@ class Job
 
     public $companyName;
 
-    public function __construct()
+    /**
+     * Job constructor.
+     * @param string $instanceIdentifier
+     */
+    public function __construct($instanceIdentifier = '')
     {
+        $this->instanceIdentifier = $instanceIdentifier;
+
         $this->getShortInfo();
     }
 
     public function getShortInfo()
     {
-        $result = \VCAPI\Common\Request::get('/users/user_work.json', false);
+        $result = Request::get('/users/user_work.json', $this->instanceIdentifier);
         
         if (!$result->worker) {
             $this->worker = false;
@@ -49,6 +59,9 @@ class Job
         }
     }
 
+    /**
+     * @return array
+     */
     public function getProfessions()
     {
         return $this->professions;
@@ -57,41 +70,43 @@ class Job
     public function resign()
     {
         if (!$this->worker) {
-            \VCAPI\Common\Error::exception("User not work now");
+            Error::exception("User not work now");
             return false;
         }
         
-        $result = \VCAPI\Common\Request::post('/company_workers/resign_from_work.json', array(
+        $result = Request::post('/company_workers/resign_from_work.json', array(
             'data' => array(
                 'CompanyWorker' => array(
                     'worker_id' => $this->companyWorkerId
                 )
             )
-        ), false);
+        ), $this->instanceIdentifier);
     }
 
-    public function doWork($energy)
+    /**
+     * @param $energy
+     * @param string $userIdentifier
+     * @return array|bool
+     * @throws \ErrorException
+     */
+    public function doWork($energy, $userIdentifier = '')
     {
         if (!$this->worker) {
-            \VCAPI\Common\Error::exception('User not work now');
-            return false;
+            return Error::exception("User doesn't work now");
         }
-            
-        $user = \VCAPI\Model\User::$instance();
-        if (!$user->energy || $user->energy < $energy) {
-            \VCAPI\Common\Error::exception('No energy');
-            return false;
+
+        if (!User::getInstance($userIdentifier)->energy || User::getInstance($userIdentifier)->energy < $energy) {
+            return Error::exception('No energy');
         }
-            
+
         if ($energy === 0) {
-            $energy = $user->energy;
+            $energy = User::getInstance($userIdentifier)->energy;
         }
+
         if (!$energy = intval($energy)) {
-            \VCAPI\Common\Error::exception('Energy must be bigger than null');
-            return false;
+            return Error::exception('Energy must be bigger than null');
         }
-            
-        
+
         $energy = $this->splitEnergy($energy);
         $statistic = array(
             'energy' => 0,
@@ -99,7 +114,7 @@ class Job
             'expirience' => 0,
             'production_points' => 0
         );
-        
+
         foreach ($energy as $value) {
             $query = array(
                 'data' => array(
@@ -111,20 +126,21 @@ class Job
                     )
                 )
             );
-            
-            $result = \VCAPI\Common\Request::post('/users/begin_work.json', $query, false);
-            
+
+            $result = Request::post('/users/begin_work.json', $query, $this->instanceIdentifier);
+
             $statistic['energy'] += $result->work_report->user_energy_spent;
             $statistic['salary'] += $result->short_work_report->salary;
             $statistic['expirience'] += $result->short_work_report->exp;
             $statistic['production_points'] += $result->short_work_report->today_production_points;
         }
-        
+
         return $statistic;
     }
 
     /**
-     * @param integer $energy
+     * @param $energy
+     * @return array
      */
     private function splitEnergy($energy)
     {

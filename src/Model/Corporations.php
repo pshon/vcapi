@@ -2,25 +2,39 @@
 
 namespace VCAPI\Model;
 
+use VCAPI\Common\Collection;
+use VCAPI\Common\Error;
+use VCAPI\Common\Request;
+
 class Corporations {
+
+    public $instanceIdentifier = '';
     
-    public function __construct() {
+    public function __construct($instanceIdentifier = '') {
+        $this->instanceIdentifier = $instanceIdentifier;
+
         $this->getShortList();
     }
-    
+
+    /**
+     * @return mixed
+     * @throws \ErrorException
+     */
     public function getShortList() {
-        $result = \VCAPI\Common\Request::get('/corporations/corporation_list.json');
+        $result = Request::get('/corporations/corporation_list.json', $this->instanceIdentifier);
         
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
-            return false;
+            Error::exception($result->setFlash[0]->msg);
         }
         
         return $result->corporations;
     }
-    
+
+    /**
+     * @return Collection
+     */
     public function getAll() {
-        $list = new \VCAPI\Common\Collection();
+        $list = new Collection();
         $items = $this->getShortList();
         
         if(empty($items)) {
@@ -28,7 +42,7 @@ class Corporations {
         }
         
         foreach($items as $item) {
-            $list->add(new \VCAPI\Model\Corporation($item->id));
+            $list->add(new Corporation($item->id, $this->instanceIdentifier));
         }
         
         return $list;

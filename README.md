@@ -24,7 +24,7 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-$user = new \VCAPI\Model\User();
+$user = \VCAPI\Model\User::getInstance();
 if(!$user->Auth('login', 'password')) {
   echo "Not logged";
 } else {
@@ -57,7 +57,7 @@ $job->doWork(100);
 
 ```php
 // Get all companies that belong to user
-$user = new \VCAPI\Model\User();
+$user = \VCAPI\Model\User::getInstance();
 print_r($user->getCompanies());
 
 // or load company information by ID
@@ -67,7 +67,7 @@ var_dump(\VCAPI\Model\Company::loadById($companyId))
 *Example 4* - Use collection features
 
 ```php
-$user = new \VCAPI\Model\User();
+$user = \VCAPI\Model\User::getInstance();
 
 // return corporations collection
 print_r($user->getCorporations());
@@ -96,12 +96,12 @@ Below is a list of the public methods in the common classes you will most likely
 
 ```php
 User::
-    Auth($login, $password)             // Authorization
+    auth($login, $password)             // Authorization
     getShortInfo()                      // Assign user info on current instance
     getFullInfo()                       // Return extended user information
     getCompanies()                      // Return all companies collection that belong to user
-    getCorporations()			// Return all corporations collection which shares belong to user
-    UnAuth()                            // Detach user session
+    getCorporations()			        // Return all corporations collection which shares belong to user
+    unAuth()                            // Detach user session
         
     $userId                             // Current user id
     $level                              // User exp level

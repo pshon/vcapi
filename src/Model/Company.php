@@ -1,8 +1,12 @@
 <?php
 namespace VCAPI\Model;
 
+use VCAPI\Common\Error;
+use VCAPI\Common\Request;
+
 class Company
 {
+    public $instanceIdentifier = '';
 
     public $id;
 
@@ -65,14 +69,17 @@ class Company
     /**
      * Company constructor.
      * @param $item
+     * @param string $instanceIdentifier
      * @throws \ErrorException
      */
-    public function __construct($item)
+    public function __construct($item, $instanceIdentifier = '')
     {
         if (!($item instanceof \stdClass)) {
-            \VCAPI\Common\Error::exception('Incoming data not found');
+            Error::exception('Incoming data not found');
             return false;
         }
+
+        $this->instanceIdentifier = $instanceIdentifier;
 
         foreach (get_object_vars($item) as $name => $value) {
             if (property_exists($this, $name)) {
@@ -81,15 +88,15 @@ class Company
         }
 
         if (property_exists($item, 'city_id')) {
-            $this->city = \VCAPI\Model\City::getNameById($item->city_id);
+            $this->city = City::getNameById($item->city_id);
         }
 
         if (property_exists($item, 'current_production')) {
-            $this->current_production = new \VCAPI\Model\CompanyProduction($item->current_production);
+            $this->current_production = new CompanyProduction($item->current_production);
         }
 
         if (property_exists($item, 'company_type_id')) {
-            $this->company_type = new \VCAPI\Model\CompanyType($item->company_type_id);
+            $this->company_type = new CompanyType($item->company_type_id);
         }
     }
 
@@ -98,54 +105,62 @@ class Company
      */
     public function getProductionList()
     {
-        $result = \VCAPI\Common\Request::get('/companies/production_list/' . $this->id . '.json', false);
+        $result = Request::get('/companies/production_list/' . $this->id . '.json');
         $list = [];
 
         foreach ($result->company_productions as $item) {
-            $list[] = new \VCAPI\Model\Product($item);
+            $list[] = new Product($item);
         }
 
         return $list;
     }
 
+    /**
+     * @param $productionId
+     * @return bool
+     */
     public function setProductionId($productionId)
     {
         if ($this->current_production->id == $productionId) {
             return false;
         }
 
-        $result = \VCAPI\Common\Request::post('/companies/set_production.json', array(
+        $result = Request::post('/companies/set_production.json', array(
             'data' => array(
                 'Company' => array(
                     'id'                 => $this->id,
                     'current_production' => $productionId
                 )
             )
-        ), false);
+        ));
 
         return true;
     }
 
+    /**
+     * @param $managerId
+     * @return bool
+     */
     public function setManagerId($managerId)
     {
         if ($this->private) {
-            $result = \VCAPI\Common\Request::post('/companies/set_manager.json', array(
+            $result = Request::post('/companies/set_manager.json', array(
                 'data' => array(
                     'Company' => array(
                         'id' => $this->id,
                         'manager_id' => $managerId
                     )
                 )
-            ), false);
+            ));
         } else {
-            $result = \VCAPI\Common\Request::post('/corporation_companies/set_manager.json', array(
+            $result = Request::post('/corporation_companies/set_manager.json', array(
                 'data' => array(
                     'Company' => array(
                         'id' => $this->id,
                         'manager_id' => $managerId
                     )
                 )
-            ), false);
+            ));
         }
 
         return true;
@@ -153,29 +168,35 @@ class Company
 
     /**
      * @param $id
+     * @param string $instanceIdentifier
      * @return Company
      * @throws \ErrorException
      */
-    public static function loadById($id)
+    public static function loadById($id, $instanceIdentifier = '')
     {
-        $result = \VCAPI\Common\Request::get('/companies/info/' . $id . '.json', false);
+        $result = Request::get('/companies/info/' . $id . '.json', false);
 
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
         }
 
-        $company = new self($result->company);
+        $company = new self($result->company, $instanceIdentifier);
         $company->getWorkers();
 
         return $company;
     }
 
+    /**
+     * @param bool $id
+     * @return bool|int
+     * @throws \ErrorException
+     */
     public function getStorage($id = false)
     {
-        $result = \VCAPI\Common\Request::get('/company_items/storage/' . $this->id . '.json', false);
+        $result = Request::get('/company_items/storage/' . $this->id . '.json');
 
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
             return false;
         }
 
@@ -193,24 +214,33 @@ class Company
         return $result->storage;
     }
 
+    /**
+     * @param $itemId
+     * @param $qty
+     * @return bool
+     * @throws \ErrorException
+     */
     public function moveItemToCorporation($itemId, $qty)
     {
-        $result = \VCAPI\Common\Request::post('/company_items/move_items_to_corporation/' . $this->id . '/' . $itemId . '/' . $qty . '.json');
+        $result = Request::post('/company_items/move_items_to_corporation/' . $this->id . '/' . $itemId . '/' . $qty . '.json');
 
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
             return false;
         }
 
         return true;
     }
 
+    /**
+     * @throws \ErrorException
+     */
     public function getWorkers()
     {
-        $result = \VCAPI\Common\Request::get('/company_workers/list_workers/' . $this->id . '.json', false);
+        $result = Request::get('/company_workers/list_workers/' . $this->id . '.json');
 
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
         }
 
         $this->workplaces = $result->currentCompany->Company->company_level * 5;
@@ -221,26 +251,34 @@ class Company
 
         if (!empty($result->currentCompany->CompanyWorker)) {
             foreach ($result->currentCompany->CompanyWorker as $item) {
-                $this->workers[] = new \VCAPI\Model\Worker($item);
+                $this->workers[] = new Worker($item, $this->instanceIdentifier);
             }
         }
 
         if (!empty($result->currentCompany->UserForeignWorker)) {
             foreach ($result->currentCompany->UserForeignWorker as $item) {
-                $this->workers[] = new \VCAPI\Model\Worker($item);
+                $this->workers[] = new Worker($item, $this->instanceIdentifier);
             }
         }
     }
 
+    /**
+     * @param $level
+     * @param $qty
+     * @return bool
+     */
     public function addForeignWorker($level, $qty)
     {
-        $worker = new \VCAPI\Model\Worker();
+        $worker = new Worker($this->instanceIdentifier);
         return $worker->hire($this->id, $level, $qty);
     }
 
+    /**
+     * @param $worker
+     */
     public function deleteWorker($worker)
     {
-        if ($worker instanceof \VCAPI\Model\Worker) {
+        if ($worker instanceof Worker) {
             if ($worker->isForeign) {
                 $this->deleteForeignWorker($worker->id);
             } else {
@@ -249,32 +287,47 @@ class Company
         }
     }
 
+    /**
+     * @param $workerId
+     * @return mixed
+     * @throws \ErrorException
+     */
     public function deleteForeignWorker($workerId)
     {
-        $result = \VCAPI\Common\Request::post('/company_foreign_workers/delete/' . $this->id . '/' . $workerId . '/1.json');
+        $result = Request::post('/company_foreign_workers/delete/' . $this->id . '/' . $workerId . '/1.json');
 
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
         }
 
         return $result;
     }
 
+    /**
+     * @param $workerId
+     * @return mixed
+     * @throws \ErrorException
+     */
     public function deleteUserWorker($workerId)
     {
-        $result = \VCAPI\Common\Request::post('/company_workers/delete_worker/' . $workerId . '/1.json');
+        $result = Request::post('/company_workers/delete_worker/' . $workerId . '/1.json');
 
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
         }
 
         return $result;
     }
 
+    /**
+     * @param $amount
+     * @return bool
+     * @throws \ErrorException
+     */
     public function takeMoney($amount)
     {
         if ($this->private) {
-            $result = \VCAPI\Common\Request::post('/companies/take_funds.json', array(
+            $result = Request::post('/companies/take_funds.json', array(
                 'data' => array(
                     'Company' => array(
                         'id' => 3785,
@@ -283,7 +336,7 @@ class Company
                 )
             ), false);
         } else {
-            $result = \VCAPI\Common\Request::post('/corporation_companies/take_funds.json', array(
+            $result = Request::post('/corporation_companies/take_funds.json', array(
                 'data' => array(
                     'Company' => array(
                         'id' => 3785,
@@ -294,41 +347,50 @@ class Company
         }
 
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
         }
 
         return true;
     }
 
+    /**
+     * @param $amount
+     * @return bool
+     * @throws \ErrorException
+     */
     public function addMoney($amount)
     {
         if ($this->private) {
-            $result = \VCAPI\Common\Request::post('/corporation_companies/add_funds.json', array(
+            $result = Request::post('/corporation_companies/add_funds.json', array(
                 'data' => array(
                     'Company' => array(
                         'id' => $this->id,
                         'amount_add' => $amount
                     )
                 )
-            ), false);
+            ));
         } else {
-            $result = \VCAPI\Common\Request::post('/corporation_companies/add_funds.json', array(
+            $result = Request::post('/corporation_companies/add_funds.json', array(
                 'data' => array(
                     'Company' => array(
                         'id' => $this->id,
                         'amount_add' => $amount
                     )
                 )
-            ), false);
+            ));
         }
 
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
         }
 
         return true;
     }
 
+    /**
+     * @return bool
+     * @throws \ErrorException
+     */
     public function saveVacancy()
     {
         $query = array(
@@ -342,10 +404,10 @@ class Company
             )
         );
 
-        $result = \VCAPI\Common\Request::post('/vacancies/save_vacancy.json', $query, false);
+        $result = Request::post('/vacancies/save_vacancy.json', $query);
 
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
         }
 
         return true;

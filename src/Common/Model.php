@@ -7,7 +7,7 @@ class Model {
     /**
      * Get plain array from current instance
      *  
-     * @return Array
+     * @return array
      */
     public function toObject() {
         return $this->getObjectVars();
@@ -37,9 +37,9 @@ class Model {
     private function getObjectVars()
     {
         $result = array();
-        foreach(get_class_vars(get_class($this)) as $property => $value) {
-            if(!property_exists(__CLASS__, $property) && property_exists(get_class($this), $property)) {
-                if($this->{$property} instanceof \VCAPI\Common\Model) {
+        foreach (get_class_vars(get_class($this)) as $property => $value) {
+            if (!property_exists(__CLASS__, $property) && property_exists(get_class($this), $property)) {
+                if ($this->{$property} instanceof Model) {
                     $result[$property] = $this->{$property}->getObjectVars();
                 } else {
                     $result[$property] = $this->{$property};

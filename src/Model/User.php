@@ -2,8 +2,13 @@
 
 namespace VCAPI\Model;
 
+use VCAPI\Common\Collection;
+use VCAPI\Common\Error;
+use VCAPI\Common\Request;
+
 class User
 {
+    public $instanceIdentifier = '';
 
     public $userId;
 
@@ -23,56 +28,63 @@ class User
     
     public $avatarId = 0;
 
-    public static $instance = false;
+    private static $instances = [];
 
-    public function __construct($clearSession = false)
+    private function __construct($instanceIdentifier)
     {
-        self::$instance = $this;
-        
-        if ($clearSession) {
-            $this->UnAuth();
-        }
-        
-        $this->getShortInfo();
+        $this->instanceIdentifier = $instanceIdentifier;
     }
 
-    public static function instance()
+    /**
+     * @param string $key
+     * @return User
+     */
+    public static function getInstance($key = '')
     {
-        if (self::$instance) {
-            return self::$instance;
-        } else {
-            self::$instance = new User();
+        if(!array_key_exists($key, self::$instances)) {
+            self::$instances[$key] = new self($key);
         }
+
+        return self::$instances[$key];
     }
 
-    public function Auth($login, $pass)
+    /**
+     * @param $login
+     * @param $pass
+     * @return bool
+     * @throws \ErrorException
+     */
+    public function auth($login, $pass)
     {
-        $this->UnAuth();
-        $result = \VCAPI\Common\Request::post('/users/app_auth.json', array(
+        $this->unAuth();
+        $result = Request::post('/users/app_auth.json', array(
             'data' => array(
                 'User' => array(
                     'username' => $login,
                     'password' => $pass
                 )
             )
-        ), false);
+        ), $this->instanceIdentifier);
         
         $this->getShortInfo();
         
         if (empty($this->userId)) {
-            \VCAPI\Common\Error::exception('Authorization error');
-            return false;
+            return Error::exception('Authorization error');
         }
         
         return true;
     }
 
+    /**
+     * @return bool
+     * @throws \ErrorException
+     */
     public function getShortInfo()
     {
-        $result = \VCAPI\Common\Request::get('/users/short_infos.json');
-                
-        if (empty($result->userId)) {
-            return false;
+        $result = Request::get('/users/short_infos.json', $this->instanceIdentifier);
+
+        if (!property_exists($result, 'userId')) {
+            return Error::exception('Authorization error');
         }
         
         $this->userId = $result->userId;
@@ -82,17 +94,21 @@ class User
         $this->health = $result->user->User->health;
         $this->maxHealth = $result->user->User->max_health;
         $this->level = $result->user->UserLevel->level;
-        $this->city = new \VCAPI\Model\City($result->user->User->city_id);
+        $this->city = new City($result->user->User->city_id);
         $this->avatarId = $result->user->User->avatar;
         
         return true;
     }
-    
+
+    /**
+     * @return mixed
+     * @throws \ErrorException
+     */
     public function getFullInfo() {
-        $result = \VCAPI\Common\Request::get('/users/infos.json');
+        $result = Request::get('/users/infos.json', $this->instanceIdentifier);
         
         if (empty($result->userId)) {
-            return false;
+            return Error::exception('Authorization error');
         }
         
         return $result->user;
@@ -101,32 +117,41 @@ class User
     /**
      * Get all companies that belong to user
      *
-     * @return array|bool
+     * @return \VCAPI\Common\Collection
+     * @throws \ErrorException
      */
     public function getCompanies() {
-        $result = \VCAPI\Common\Request::get('/companies/user_companies.json');
+        $result = Request::get('/companies/user_companies.json', $this->instanceIdentifier);
 
         if (empty($result->userId)) {
-            return false;
+            return Error::exception('Authorization error');
         }
 
-        $companies = new \VCAPI\Common\Collection();
+        $companies = new Collection();
 
         foreach ($result->companies as $company) {
-            $companies->add(new \VCAPI\Model\Company($company->Company));
+            $companies->add(new Company($company->Company, $this->instanceIdentifier));
         }
 
         return $companies;
     }
-    
+
+    /**
+     * Get all corporations that belong to user
+     *
+     * @return \VCAPI\Common\Collection
+     * @throws \ErrorException
+     */
     public function getCorporations() {
-        $model = new \VCAPI\Model\Corporations();
+        $model = new Corporations($this->instanceIdentifier);
         
         return $model->getAll();
     }
 
-    public function UnAuth()
+    public function unAuth()
     {
-        \VCAPI\Common\Request::removeCookie();
+        Request::removeCookie($this->instanceIdentifier);
     }
+
+    private function __clone() { }
 }

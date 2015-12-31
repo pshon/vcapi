@@ -1,8 +1,11 @@
 <?php
 namespace VCAPI\Model;
 
+use VCAPI\Common\Request;
+
 class Vacancies
 {
+    public $instanceIdentifier = '';
 
     private $vacancies = array();
 
@@ -10,65 +13,87 @@ class Vacancies
 
     private $companies = array();
 
-    public function __construct()
+    /**
+     * Vacancies constructor.
+     * @param string $instanceIdentifier
+     */
+    public function __construct($instanceIdentifier = '')
     {
+        $this->instanceIdentifier = $instanceIdentifier;
+
         $this->loadVacancies();
     }
 
+    /**
+     * @param $companyId
+     * @return bool
+     */
     public function getCompanyName($companyId)
     {
         return (!empty($this->companies->{$companyId})) ? $this->companies->{$companyId} : false;
     }
 
+    /**
+     * @param $professionId
+     * @return array|bool
+     */
     public function getListByProfId($professionId)
     {
         if (empty($this->vacancies)) {
-                    return false;
+            return false;
         }
         if (empty($this->indexes['by-prof']) || empty($this->indexes['by-prof'][$professionId])) {
-                    return false;
+            return false;
         }
         
         $list = array();
         
         foreach ($this->indexes['by-prof'][$professionId] as $vacancyIndex) {
-            $list[] = new \VCAPI\Model\Vacancy($this->vacancies[$vacancyIndex]);
+            $list[] = new Vacancy($this->vacancies[$vacancyIndex], $this->instanceIdentifier);
         }
         
         return $list;
     }
 
+    /**
+     * @param $companyId
+     * @return array|bool
+     */
     public function getListByCompanyId($companyId)
     {
         if (empty($this->vacancies)) {
-                    return false;
+            return false;
         }
         if (empty($this->indexes['by-company']) || empty($this->indexes['by-company'][$companyId])) {
-                    return false;
+            return false;
         }
         
         $list = array();
         
         foreach ($this->indexes['by-company'][$companyId] as $vacancyIndex) {
-            $list[] = new \VCAPI\Model\Vacancy($this->vacancies[$vacancyIndex]);
+            $list[] = new Vacancy($this->vacancies[$vacancyIndex], $this->instanceIdentifier);
         }
         
         return $list;
     }
 
+    /**
+     * @param $corporationId
+     * @return array|bool
+     */
     public function getListByCorpId($corporationId)
     {
         if (empty($this->vacancies)) {
-                    return false;
+            return false;
         }
         if (empty($this->indexes['by-corp']) || empty($this->indexes['by-corp'][$corporationId])) {
-                    return false;
+            return false;
         }
         
         $list = array();
         
         foreach ($this->indexes['by-corp'][$corporationId] as $vacancyIndex) {
-            $list[] = new \VCAPI\Model\Vacancy($this->vacancies[$vacancyIndex]);
+            $list[] = new Vacancy($this->vacancies[$vacancyIndex], $this->instanceIdentifier);
         }
         
         return $list;
@@ -76,7 +101,7 @@ class Vacancies
 
     public function loadVacancies()
     {
-        $result = \VCAPI\Common\Request::get('/vacancies/index.json', false);
+        $result = Request::get('/vacancies/index.json', $this->instanceIdentifier);
         $this->companies = $result->companies;
         if (empty($result->vacancies)) {
             $this->vacancies = array();
@@ -96,7 +121,7 @@ class Vacancies
         );
         
         if (empty($this->vacancies)) {
-                    return;
+            return;
         }
         
         foreach ($this->vacancies as $index => $vacancy) {

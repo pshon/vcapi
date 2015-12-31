@@ -27,7 +27,7 @@ class Collection {
     
     public function find($key, $value, $onlyIndex = false) {
         if(empty($this->collection)) return null;
-        $return = new \VCAPI\Common\Collection();
+        $return = new Collection();
         
         foreach($this->collection as $index => $item) {            
             if(is_array($item)) {
@@ -75,7 +75,7 @@ class Collection {
         }
         
         if(empty($keys)) {
-            \VCAPI\Common\Error::exception('No valid data to sort');
+            Error::exception('No valid data to sort');
             return $this->collection;
         }
         
@@ -106,7 +106,7 @@ class Collection {
     
     /**
      * Get plain array from collection
-     * @return Array <object>
+     * @return array <object>
      */
     public function toObject() {
         return $this->collection;

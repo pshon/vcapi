@@ -1,8 +1,13 @@
 <?php
 namespace VCAPI\Model;
 
+use VCAPI\Common\Collection;
+use VCAPI\Common\Error;
+use VCAPI\Common\Request;
+
 class Corporation
 {
+    public $instanceIdentifier = '';
 
     public $id;
 
@@ -14,20 +19,33 @@ class Corporation
 
     public $companies;
 
-    public function __construct($id = false)
+    /**
+     * Corporation constructor.
+     * @param bool $id
+     * @param string $instanceIdentifier
+     */
+    public function __construct($id = false, $instanceIdentifier = '')
     {
+        $this->instanceIdentifier = $instanceIdentifier;
+
         if ($id !== false) {
             $this->id = $id;
             $this->getInfo();
         }
     }
 
+    /**
+     * @param bool $orderBy
+     * @param string $orderDirection
+     * @return array|bool
+     * @throws \ErrorException
+     */
     public function getShareHolders($orderBy = false, $orderDirection = 'ASC')
     {
-        $result = \VCAPI\Common\Request::get('/corporations/corporation_stockholders/' . $this->id . '.json', false);
+        $result = Request::get('/corporations/corporation_stockholders/' . $this->id . '.json', $this->instanceIdentifier);
         
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
@@ -59,16 +77,21 @@ class Corporation
         return $plain;
     }
 
+    /**
+     * @param bool $id
+     * @return bool|\VCAPI\Common\Collection
+     * @throws \ErrorException
+     */
     public function getStorage($id = false)
     {
-        $result = \VCAPI\Common\Request::get('/corporation_items/storage/' . $this->id . '.json', false);
+        $result = Request::get('/corporation_items/storage/' . $this->id . '.json', $this->instanceIdentifier);
         
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
-        $storageCollection = new \VCAPI\Common\Collection();
+        $storageCollection = new Collection();
         
         foreach ($result->storage as $item) {
             if ($id != false ) {
@@ -78,7 +101,7 @@ class Corporation
                     return $count;
                 }
             } else {
-                $product = new \VCAPI\Model\Product($item->ItemType);
+                $product = new Product($item->ItemType);
                 $product->quantity = $item->CorporationItem->quantity;
                 
                 $storageCollection->add($product);
@@ -88,74 +111,101 @@ class Corporation
         
         return $storageCollection;
     }
-    
+
+    /**
+     * @return bool
+     * @throws \ErrorException
+     */
     public function getInfo()
     {
-        $result = \VCAPI\Common\Request::get('/corporations/corporation_office/' . $this->id . '.json');
+        $result = Request::get('/corporations/corporation_office/' . $this->id . '.json', $this->instanceIdentifier);
         
         $this->name = $result->currentCorporation->name;
         $this->vd_balance = $result->currentCorporation->vd_balance;
         $this->vg_balance = $result->currentCorporation->vg_balance;
                 
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
         if (!empty($result->companies)) {
             foreach ($result->companies as $item) {
-                $this->companies[] = new \VCAPI\Model\Company($item);
+                $this->companies[] = new Company($item);
             }
         }
     }
 
+    /**
+     * @param $itemTypeId
+     * @param $companyId
+     * @param $qty
+     * @return bool
+     * @throws \ErrorException
+     */
     public function moveItemToCompany($itemTypeId, $companyId, $qty)
     {
-        $result = \VCAPI\Common\Request::post('/corporation_items/move_items_to_company/' . $companyId . '/' . $itemTypeId . '/' . $qty . '.json');
+        $result = Request::post(
+            '/corporation_items/move_items_to_company/' . $companyId . '/' . $itemTypeId . '/' . $qty . '.json',
+            array(),
+            $this->instanceIdentifier
+        );
         
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
-            
+            Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
         return true;
     }
 
+    /**
+     * @param $amount
+     * @return bool
+     * @throws \ErrorException
+     */
     public function investVD($amount)
     {
-        $result = \VCAPI\Common\Request::post('/corporations/invest_vd.json', array(
+        $result = Request::post('/corporations/invest_vd.json', array(
             'data' => array(
                 'Corporation' => array(
                     'id' => $this->id,
                     'vd_invest' => $amount
                 )
             )
-        ), false);
+        ), $this->instanceIdentifier);
         
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
         return true;
     }
-    
+
+    /**
+     * @param $production
+     * @param $count
+     * @param $price
+     * @param string $currency
+     * @return bool
+     * @throws \ErrorException
+     */
     public function sellProduction($production, $count, $price, $currency = 'vdollars') {
-        $result = \VCAPI\Common\Request::post('/exchanges/add_corporation_exchange.json', array(
+        $result = Request::post('/exchanges/add_corporation_exchange.json', array(
             'data' => array(
                 'Exchange' => array(
                     'price' => floatval($price),
                     'currency' => $currency,
                     'number' =>$count,
-                    'item_type_id'=> ($production instanceof \VCAPI\Model\Product)? $production->id : $production,
+                    'item_type_id'=> ($production instanceof Product)? $production->id : $production,
                     'corporation_id' => $this->id
                 )
             )
-        ));
+        ), $this->instanceIdentifier);
         
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
