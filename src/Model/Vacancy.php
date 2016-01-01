@@ -48,7 +48,7 @@ class Vacancy
 
     public function getJob()
     {
-        if (User::getInstance()->level < $this->level) {
+        if (User::getInstance()->UserLevel->level < $this->level) {
             Error::exception('User professional level is low, be need ' . $this->level . ' level or higher');
             return false;
         }

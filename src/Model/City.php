@@ -1,7 +1,9 @@
 <?php
 namespace VCAPI\Model;
 
-class City
+use VCAPI\Common\Model;
+
+class City extends Model
 {
 
     private static $cities = array(
@@ -16,15 +18,11 @@ class City
 
     /**
      * City constructor.
-     * @param $id
+     * @param null $data
      */
-    public function __construct($id)
+    public function __construct($data = null)
     {
-        $this->id = $id;
-
-        if (array_key_exists($id, self::$cities)) {
-            $this->name = self::$cities[$id];
-        }
+        $this->fillModel($data);
     }
 
     /**
