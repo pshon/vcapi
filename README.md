@@ -25,10 +25,10 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 $user = \VCAPI\Model\User::getInstance();
-if(!$user->Auth('login', 'password')) {
+if(!$user->auth('login', 'password')) {
   echo "Not logged";
 } else {
-  echo 'My balance: ' . $user->balance . ' vd';
+  echo 'My balance: ' . $user->vd_balance . ' vd';
 }
 ```
 
