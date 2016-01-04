@@ -32,8 +32,8 @@ class CompanyProduction
 
     /**
      * CompanyProduction constructor.
+     *
      * @param $item
-     * @internal param $id
      */
     public function __construct($item)
     {

@@ -24,11 +24,11 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-$user = new \VCAPI\Model\User();
-if(!$user->Auth('login', 'password')) {
+$user = \VCAPI\Model\User::getInstance();
+if(!$user->auth('login', 'password')) {
   echo "Not logged";
 } else {
-  echo 'My balance: ' . $user->balance . ' vd';
+  echo 'My balance: ' . $user->vd_balance . ' vd';
 }
 ```
 
@@ -57,7 +57,7 @@ $job->doWork(100);
 
 ```php
 // Get all companies that belong to user
-$user = new \VCAPI\Model\User();
+$user = \VCAPI\Model\User::getInstance();
 print_r($user->getCompanies());
 
 // or load company information by ID
@@ -67,7 +67,7 @@ var_dump(\VCAPI\Model\Company::loadById($companyId))
 *Example 4* - Use collection features
 
 ```php
-$user = new \VCAPI\Model\User();
+$user = \VCAPI\Model\User::getInstance();
 
 // return corporations collection
 print_r($user->getCorporations());
@@ -96,22 +96,37 @@ Below is a list of the public methods in the common classes you will most likely
 
 ```php
 User::
-    Auth($login, $password)             // Authorization
+    auth($login, $password)             // Authorization
     getShortInfo()                      // Assign user info on current instance
     getFullInfo()                       // Return extended user information
     getCompanies()                      // Return all companies collection that belong to user
-    getCorporations()			// Return all corporations collection which shares belong to user
-    UnAuth()                            // Detach user session
-        
-    $userId                             // Current user id
-    $level                              // User exp level
-    $energy                             // Current user energy
-    $maxEnergy                          // Max user energy
-    $balance                            // Current user balance in VD
+    getCorporations()			        // Return all corporations collection which shares belong to user
+    unAuth()                            // Detach user session
+
+    $id                                 // Current user id
+    $avatar                             // Avatar id
+    $avatar_img                         // Avatar img
+    $username                           //
+    $vd_balance                         // Current user balance in VD
+    $vg_balance                         // Current user balance in VG
+    $fight_points                       //
     $health                             // Current user health
-    $maxHealth                          // Max user health
-    $city                               // City name
-    $avatarId                           // Avatar id
+    $max_health                         // Max user health
+    $energy                             // Current user energy
+    $max_energy                         // Max user energy
+    $prestige                           // Level of prestige
+    $social_status_title                // Social status title (Горожанин, ...)
+    $social_status                      // Social status (CITIZEN, ...)
+    $city_id                            // City id
+    $city_name                          // City name
+    $party_name                         //
+    $last_up_energy                     //
+    $delta_recovery_energy              //
+    $military_rank                      //
+    $military_rank_img                  //
+    $UserLevel                          // \VCAPI\Model\UserLevel (level, xp, nextLevelExperience)
+    $City                               // \VCAPI\Model\City (id, name)
+    $MilitaryRank                       // \VCAPI\Model\MilitaryRank (name, image)
 
 Company::
     loadById()                          // Load company information by id (static method)
@@ -158,6 +173,15 @@ Company::
     $workers                            //
     $vacancy                            //
 
+MilitaryRank::
+    $name                               //
+    $image                              //
+
+UserLevel::
+    $level                              //
+    $xp                                 //
+    $nextLevelExperience                //
+
 Corporation::
     *in process...*
 
@@ -177,7 +201,11 @@ Product::
     *in process...*
     
 City::
-    *in process...*
+    getCitiesList()                     // Get list of cities (id => name)
+    getNameById()                       // Get city name by ID
+
+    $id                                 //
+    $name                               //
     
 Product::
     *in process...*

@@ -2,131 +2,216 @@
 
 namespace VCAPI\Model;
 
-class User
+use VCAPI\Common\Collection;
+use VCAPI\Common\Error;
+use VCAPI\Common\Model;
+use VCAPI\Common\Request;
+
+class User extends Model
 {
+    public $instanceIdentifier = '';
 
-    public $userId;
+    public $id;
 
-    public $level;
+    public $avatar = 0;
+
+    public $avatar_img;
+
+    public $username;
+
+    public $vd_balance;
+
+    public $vg_balance;
+
+    public $fight_points;
+
+    public $health;
+
+    public $max_health;
 
     public $energy;
 
-    public $maxEnergy;
+    public $max_energy;
 
-    public $balance;
+    public $prestige;
 
-    public $health;
-    
-    public $maxHealth;
+    public $social_status_title;
 
-    public $city;
-    
-    public $avatarId = 0;
+    public $social_status;
 
-    public static $instance = false;
+    public $city_id;
 
-    public function __construct($clearSession = false)
+    public $city_name;
+
+    public $party_name;
+
+    public $last_up_energy;
+
+    public $delta_recovery_energy;
+
+    public $military_rank;
+
+    public $military_rank_img;
+
+    /** @var \VCAPI\Model\UserLevel */
+    public $UserLevel;
+
+    /** @var \VCAPI\Model\City */
+    public $City;
+
+    /** @var \VCAPI\Model\MilitaryRank */
+    public $MilitaryRank;
+
+    private static $instances = [];
+
+    private function __construct($instanceIdentifier)
     {
-        self::$instance = $this;
-        
-        if ($clearSession) {
-            $this->UnAuth();
-        }
-        
-        $this->getShortInfo();
+        $this->instanceIdentifier = $instanceIdentifier;
     }
 
-    public static function instance()
+    /**
+     * @param string $key
+     * @return User
+     */
+    public static function getInstance($key = '')
     {
-        if (self::$instance) {
-            return self::$instance;
-        } else {
-            self::$instance = new User();
+        if(!array_key_exists($key, self::$instances)) {
+            self::$instances[$key] = new self($key);
         }
+
+        return self::$instances[$key];
     }
 
-    public function Auth($login, $pass)
+    /**
+     * @param $login
+     * @param $pass
+     * @return bool
+     * @throws \ErrorException
+     */
+    public function auth($login, $pass)
     {
-        $this->UnAuth();
-        $result = \VCAPI\Common\Request::post('/users/app_auth.json', array(
+        $this->unAuth();
+        $result = Request::post('/users/app_auth.json', array(
             'data' => array(
                 'User' => array(
                     'username' => $login,
                     'password' => $pass
                 )
             )
-        ), false);
+        ), $this->instanceIdentifier);
         
         $this->getShortInfo();
         
-        if (empty($this->userId)) {
-            \VCAPI\Common\Error::exception('Authorization error');
-            return false;
+        if (empty($this->id)) {
+            return Error::exception('Authorization error');
         }
         
         return true;
     }
 
+    /**
+     * @return bool
+     * @throws \ErrorException
+     */
     public function getShortInfo()
     {
-        $result = \VCAPI\Common\Request::get('/users/short_infos.json');
-                
-        if (empty($result->userId)) {
-            return false;
+        $result = Request::get('/users/short_infos.json', $this->instanceIdentifier);
+
+        if (!property_exists($result, 'userId')) {
+            return Error::exception('Authorization error');
         }
-        
-        $this->userId = $result->userId;
-        $this->balance = $result->user->User->vd_balance;
-        $this->energy = $result->user->User->energy;
-        $this->maxEnergy = $result->user->User->max_energy;
-        $this->health = $result->user->User->health;
-        $this->maxHealth = $result->user->User->max_health;
-        $this->level = $result->user->UserLevel->level;
-        $this->city = new \VCAPI\Model\City($result->user->User->city_id);
-        $this->avatarId = $result->user->User->avatar;
-        
+
+        $this->fillModel($result->user->User);
+
+        if (property_exists($result->user, 'UserLevel')) {
+            $this->UserLevel = new UserLevel($result->user->UserLevel);
+        }
+
+        if (property_exists($result->user, 'City')) {
+            $this->City = new City($result->user->City);
+        }
+
+        if (property_exists($result->user, 'MilitaryRank')) {
+            $this->MilitaryRank = new MilitaryRank($result->user->MilitaryRank);
+        }
+
         return true;
     }
-    
+
+    /**
+     * @return mixed
+     * @throws \ErrorException
+     */
     public function getFullInfo() {
-        $result = \VCAPI\Common\Request::get('/users/infos.json');
+        $result = Request::get('/users/infos.json', $this->instanceIdentifier);
         
         if (empty($result->userId)) {
-            return false;
+            return Error::exception('Authorization error');
         }
-        
-        return $result->user;
+
+        $this->fillModel($result->user->User);
+
+        if (property_exists($result->user, 'UserLevel')) {
+            $this->UserLevel = new UserLevel($result->user->UserLevel);
+        }
+
+        if (property_exists($result->user, 'City')) {
+            $this->City = new City($result->user->City);
+        }
+
+        if (property_exists($result->user, 'MilitaryRank')) {
+            $this->MilitaryRank = new MilitaryRank($result->user->MilitaryRank);
+        }
+
+        return true;
     }
 
     /**
      * Get all companies that belong to user
      *
-     * @return array|bool
+     * @return \VCAPI\Common\Collection
+     * @throws \ErrorException
      */
     public function getCompanies() {
-        $result = \VCAPI\Common\Request::get('/companies/user_companies.json');
+        $result = Request::get('/companies/user_companies.json', $this->instanceIdentifier);
 
         if (empty($result->userId)) {
-            return false;
+            return Error::exception('Authorization error');
         }
 
-        $companies = new \VCAPI\Common\Collection();
+        $companies = new Collection();
 
         foreach ($result->companies as $company) {
-            $companies->add(new \VCAPI\Model\Company($company->Company));
+            $companies->add(new Company($company->Company, $this->instanceIdentifier));
         }
 
         return $companies;
     }
-    
+
+    /**
+     * Get all corporations that belong to user
+     *
+     * @return \VCAPI\Common\Collection
+     * @throws \ErrorException
+     */
     public function getCorporations() {
-        $model = new \VCAPI\Model\Corporations();
+        $model = new Corporations($this->instanceIdentifier);
         
         return $model->getAll();
     }
 
-    public function UnAuth()
+    /**
+     * @return string
+     */
+    public function getAvatarURL()
     {
-        \VCAPI\Common\Request::removeCookie();
+        return 'http://news.vircities.com/img/avatars/' . $this->avatar_img;
     }
+
+    public function unAuth()
+    {
+        Request::removeCookie($this->instanceIdentifier);
+    }
+
+    private function __clone() { }
 }

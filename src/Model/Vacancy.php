@@ -1,8 +1,12 @@
 <?php
 namespace VCAPI\Model;
 
+use VCAPI\Common\Error;
+use VCAPI\Common\Request;
+
 class Vacancy
 {
+    public $instanceIdentifier = '';
 
     public $id;
 
@@ -22,8 +26,15 @@ class Vacancy
 
     public $corporationId = 0;
 
-    public function __construct(\stdClass $vacancyItem)
+    /**
+     * Vacancy constructor.
+     * @param \stdClass $vacancyItem
+     * @param string $instanceIdentifier
+     */
+    public function __construct(\stdClass $vacancyItem, $instanceIdentifier = '')
     {
+        $this->instanceIdentifier = $instanceIdentifier;
+
         $this->id = $vacancyItem->CompanyVacancy->id;
         $this->companyId = $vacancyItem->CompanyVacancy->company_id;
         $this->companyName = $vacancyItem->Company->name;
@@ -37,20 +48,18 @@ class Vacancy
 
     public function getJob()
     {
-        $user = new \VCAPI\Model\User();
-        
-        if ($user->level < $this->level) {
-            \VCAPI\Common\Error::exception('User professional level is low, be need ' . $this->level . ' level or higher');
+        if (User::getInstance()->UserLevel->level < $this->level) {
+            Error::exception('User professional level is low, be need ' . $this->level . ' level or higher');
             return false;
         }
         
-        $result = \VCAPI\Common\Request::post('/vacancies/work_vacancy.json', array(
+        $result = Request::post('/vacancies/work_vacancy.json', array(
             'data' => array(
                 'CompanyVacancy' => array(
                     'id' => $this->id
                 )
             )
-        ), false);
+        ), $this->instanceIdentifier);
         
         return $result;
     }

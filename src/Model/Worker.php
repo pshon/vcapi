@@ -1,8 +1,12 @@
 <?php
 namespace VCAPI\Model;
 
+use VCAPI\Common\Error;
+use VCAPI\Common\Request;
+
 class Worker
 {
+    public $instanceIdentifier = '';
 
     public $isForeign = false;
 
@@ -25,8 +29,15 @@ class Worker
         25 => 30
     );
 
-    public function __construct($item = false)
+    /**
+     * Worker constructor.
+     * @param bool $item
+     * @param string $instanceIdentifier
+     */
+    public function __construct($item = false, $instanceIdentifier = '')
     {
+        $this->instanceIdentifier = $instanceIdentifier;
+
         if ($item !== false && $item instanceof \stdClass) {
             $this->id = $item->id;
             $this->level = $item->profession_level;
@@ -41,24 +52,39 @@ class Worker
         }
     }
 
+    /**
+     * @param $levelId
+     * @return bool
+     */
     public function getTypeIdByLevel($levelId)
     {
         return (isset($this->foreignLevels[$levelId])) ? $this->foreignLevels[$levelId] : false;
     }
 
+    /**
+     * @param $companyId
+     * @param $level
+     * @param $qty
+     * @return bool
+     * @throws \ErrorException
+     */
     public function hire($companyId, $level, $qty)
     {
         $typeId = $this->getTypeIdByLevel($level);
         $qty = intval($qty);
         if ($typeId) {
-            \VCAPI\Common\Error::exception('Bad worker level.');
+            Error::exception('Bad worker level.');
             return false;
         }
         
-        $result = \VCAPI\Common\Request::post('/company_foreign_workers/add/' . $companyId . '/' . $typeId . '/' . $qty . '.json');
+        $result = Request::post(
+            '/company_foreign_workers/add/' . $companyId . '/' . $typeId . '/' . $qty . '.json',
+            array(),
+            $this->instanceIdentifier
+        );
         
         if (!empty($result->error)) {
-            \VCAPI\Common\Error::exception($result->setFlash[0]->msg);
+            Error::exception($result->setFlash[0]->msg);
             return false;
         }
         
