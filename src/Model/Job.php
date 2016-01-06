@@ -2,9 +2,10 @@
 namespace VCAPI\Model;
 
 use VCAPI\Common\Error;
+use VCAPI\Common\Model;
 use VCAPI\Common\Request;
 
-class Job
+class Job extends Model
 {
     public $instanceIdentifier = '';
 
@@ -45,7 +46,7 @@ class Job
     public function getShortInfo()
     {
         $result = Request::get('/users/user_work.json', $this->instanceIdentifier);
-        
+
         if (!$result->worker) {
             $this->worker = false;
         } else {
@@ -85,22 +86,21 @@ class Job
 
     /**
      * @param $energy
-     * @param string $userIdentifier
      * @return array|bool
      * @throws \ErrorException
      */
-    public function doWork($energy, $userIdentifier = '')
+    public function doWork($energy)
     {
         if (!$this->worker) {
             return Error::exception("User doesn't work now");
         }
 
-        if (!User::getInstance($userIdentifier)->energy || User::getInstance($userIdentifier)->energy < $energy) {
+        if (!User::getInstance($this->instanceIdentifier)->energy || User::getInstance($this->instanceIdentifier)->energy < $energy) {
             return Error::exception('No energy');
         }
 
         if ($energy === 0) {
-            $energy = User::getInstance($userIdentifier)->energy;
+            $energy = User::getInstance($this->instanceIdentifier)->energy;
         }
 
         if (!$energy = intval($energy)) {
