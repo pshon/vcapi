@@ -33,7 +33,10 @@ class Model {
             }
         }
     }
-    
+
+    /**
+     * @return array|null
+     */
     private function getObjectVars()
     {
         $result = array();
@@ -48,5 +51,20 @@ class Model {
         }
     
         return (empty($result))? null : $result;
+    }
+
+    /**
+     * @param $response
+     * @param $expectProperty
+     * @return mixed
+     * @throws \ErrorException
+     */
+    protected function validateResponse($response, $expectProperty)
+    {
+        if (!is_object($response) || !property_exists($response, $expectProperty)) {
+            return Error::exception('Authorization error');
+        }
+
+        return $response->{$expectProperty};
     }
 }
