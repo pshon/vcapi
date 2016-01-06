@@ -181,6 +181,22 @@ UserLevel::
     $level                              //
     $xp                                 //
     $nextLevelExperience                //
+    
+||| TradeCenter |||
+| ------------- | ------------- | ------------- |
+|getItemsGroups()| | |
+|getBusinessGroups()| | |
+|getAvailableItemGroups()| | |
+|getAvailableBusinessGroups() | | |
+|getAvailableStock()| | |
+|getAvailableCurrency()| | |
+|getAvailableItems()| | |
+|getCurrencyLotsList()| | |
+|getCurrencyLotsByType()|\$type| |
+|getLotsList()|\$category, \$itemName| |
+|getLotsListCityHall()| | |
+|getItemTypesList()|\$category| |
+|getLotsOffer()|\$currency, \$itemTypeId, \$sort, \$direction|Get lots of offers by currency (vdollars OR vgold) and Item Type ID|
 
 Corporation::
     *in process...*
