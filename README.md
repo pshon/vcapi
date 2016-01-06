@@ -181,22 +181,6 @@ UserLevel::
     $level                              //
     $xp                                 //
     $nextLevelExperience                //
-    
-||| TradeCenter |||
-| ------------- | ------------- | ------------- |
-|getItemsGroups()| | |
-|getBusinessGroups()| | |
-|getAvailableItemGroups()| | |
-|getAvailableBusinessGroups() | | |
-|getAvailableStock()| | |
-|getAvailableCurrency()| | |
-|getAvailableItems()| | |
-|getCurrencyLotsList()| | |
-|getCurrencyLotsByType()|\$type| |
-|getLotsList()|\$category, \$itemName| |
-|getLotsListCityHall()| | |
-|getItemTypesList()|\$category| |
-|getLotsOffer()|\$currency, \$itemTypeId, \$sort, \$direction|Get lots of offers by currency (vdollars OR vgold) and Item Type ID|
 
 Corporation::
     *in process...*
@@ -226,6 +210,22 @@ City::
 Product::
     *in process...*
 ```
+
+||| TradeCenter |||
+| ------------- | ------------- | ------------- |
+|getItemsGroups()| | |
+|getBusinessGroups()| | |
+|getAvailableItemGroups()| | |
+|getAvailableBusinessGroups() | | |
+|getAvailableStock()| | |
+|getAvailableCurrency()| | |
+|getAvailableItems()| | |
+|getCurrencyLotsList()| | |
+|getCurrencyLotsByType()|\$type| |
+|getLotsList()|\$category, \$itemName| |
+|getLotsListCityHall()| | |
+|getItemTypesList()|\$category| |
+|getLotsOffer()|\$currency, \$itemTypeId, \$sort, \$direction|Get lots of offers by currency (vdollars OR vgold) and Item Type ID|
 
 ## Avoiding responsibility
 This code is shown here for informational purposes. Its use is prohibited administration [VirCities](http://vircities.com). 
