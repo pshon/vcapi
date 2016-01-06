@@ -109,9 +109,9 @@ class Job extends Model
 
         $energy = $this->splitEnergy($energy);
         $statistic = array(
-            'energy' => 0,
-            'salary' => 0,
-            'expirience' => 0,
+            'energy'            => 0,
+            'salary'            => 0,
+            'experience'        => 0,
             'production_points' => 0
         );
 
@@ -131,7 +131,7 @@ class Job extends Model
 
             $statistic['energy'] += $result->work_report->user_energy_spent;
             $statistic['salary'] += $result->short_work_report->salary;
-            $statistic['expirience'] += $result->short_work_report->exp;
+            $statistic['experience'] += $result->short_work_report->exp;
             $statistic['production_points'] += $result->short_work_report->today_production_points;
         }
 
