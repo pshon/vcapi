@@ -2,9 +2,10 @@
 namespace VCAPI\Model;
 
 use VCAPI\Common\Error;
+use VCAPI\Common\Model;
 use VCAPI\Common\Request;
 
-class Job
+class Job extends Model
 {
     public $instanceIdentifier = '';
 
@@ -45,7 +46,7 @@ class Job
     public function getShortInfo()
     {
         $result = Request::get('/users/user_work.json', $this->instanceIdentifier);
-        
+
         if (!$result->worker) {
             $this->worker = false;
         } else {
@@ -85,22 +86,21 @@ class Job
 
     /**
      * @param $energy
-     * @param string $userIdentifier
      * @return array|bool
      * @throws \ErrorException
      */
-    public function doWork($energy, $userIdentifier = '')
+    public function doWork($energy)
     {
         if (!$this->worker) {
             return Error::exception("User doesn't work now");
         }
 
-        if (!User::getInstance($userIdentifier)->energy || User::getInstance($userIdentifier)->energy < $energy) {
+        if (!User::getInstance($this->instanceIdentifier)->energy || User::getInstance($this->instanceIdentifier)->energy < $energy) {
             return Error::exception('No energy');
         }
 
         if ($energy === 0) {
-            $energy = User::getInstance($userIdentifier)->energy;
+            $energy = User::getInstance($this->instanceIdentifier)->energy;
         }
 
         if (!$energy = intval($energy)) {
@@ -109,9 +109,9 @@ class Job
 
         $energy = $this->splitEnergy($energy);
         $statistic = array(
-            'energy' => 0,
-            'salary' => 0,
-            'expirience' => 0,
+            'energy'            => 0,
+            'salary'            => 0,
+            'experience'        => 0,
             'production_points' => 0
         );
 
@@ -131,7 +131,7 @@ class Job
 
             $statistic['energy'] += $result->work_report->user_energy_spent;
             $statistic['salary'] += $result->short_work_report->salary;
-            $statistic['expirience'] += $result->short_work_report->exp;
+            $statistic['experience'] += $result->short_work_report->exp;
             $statistic['production_points'] += $result->short_work_report->today_production_points;
         }
 

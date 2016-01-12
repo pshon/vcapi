@@ -211,6 +211,23 @@ Product::
     *in process...*
 ```
 
+### TradeCenter
+| **Method name** | **Parameters** | **Description** |
+| ---------------- | ------------- | ------------- |
+| getItemsGroups() | | |
+| getBusinessGroups()| | |
+| getAvailableItemGroups()| | |
+| getAvailableBusinessGroups() | | |
+| getAvailableStock()| | |
+| getAvailableCurrency()| | |
+| getAvailableItems()| | |
+| getCurrencyLotsList()| | |
+| getCurrencyLotsByType()| $type | |
+| getLotsList()| $category $itemName | |
+| getLotsListCityHall()| | |
+| getItemTypesList()| $category | |
+| getLotsOffer() | $currency, $itemTypeId, $sort, $direction|Get lots of offers by currency (vdollars OR vgold) and Item Type ID|
+
 ## Avoiding responsibility
 This code is shown here for informational purposes. Its use is prohibited administration [VirCities](http://vircities.com). 
 Use this code you can at your own risk. The author of the code does not carry responsible for the consequences that may result from using this code.
